@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  mysql-userdb:
+    image: mysql:8.0
+    container_name: mysql-userdb
+    restart: always
+    environment:
+      MYSQL_DATABASE: userdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3307:3306"
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uuser", "-puserpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  user-service:
+    build: .
+    container_name: user-service
+    restart: always
+    depends_on:
+      mysql-userdb:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-userdb:3306/userdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: userpassword
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQL8Dialect
+    ports:
+      - "8080:8080"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
