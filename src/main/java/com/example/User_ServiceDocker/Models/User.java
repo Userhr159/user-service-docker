@@ -8,8 +8,8 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @Data
+public class User {
 
-public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,4 +26,7 @@ public class Users {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Profile profile;
 }

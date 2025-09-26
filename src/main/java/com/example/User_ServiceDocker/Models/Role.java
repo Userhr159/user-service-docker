@@ -1,5 +1,6 @@
 package com.example.User_ServiceDocker.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,10 +15,11 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 50)
     private String name;
 
-    // Relación inversa con Users
+    // Relación inversa con User
     @ManyToMany(mappedBy = "roles")
-    private Set<Users> users;
+    @JsonIgnore
+    private Set<User> users;
 }
